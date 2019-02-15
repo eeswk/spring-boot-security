@@ -27,10 +27,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.logout().logoutUrl("/logout").invalidateHttpSession(true);
 
         //Custom 인증
-        //http.userDetailsService(zerockUserService);
+        http.userDetailsService(zerockUserService);
 
     }
-
+/*
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         log.info("build Auth global....");
@@ -58,7 +58,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //jdbc 인증
     @Autowired
     DataSource dataSource;
-
+*/
+    //Custom 인증
+    @Autowired
+    ZerockUserService zerockUserService;
 
 
 
