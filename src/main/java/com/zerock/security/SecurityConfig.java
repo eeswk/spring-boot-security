@@ -6,6 +6,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import javax.sql.DataSource;
 
 @Log
 @EnableWebSecurity
@@ -23,17 +26,42 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //세션 무효화
         http.logout().logoutUrl("/logout").invalidateHttpSession(true);
 
+        //Custom 인증
+        //http.userDetailsService(zerockUserService);
+
     }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         log.info("build Auth global....");
 
-        auth.inMemoryAuthentication()
-                .withUser("manager")
-                .password("{noop}1111")
-                .roles("MANAGER");
+        //inMemory
+//        auth.inMemoryAuthentication()
+//                .withUser("manager")
+//                .password("{noop}1111")
+//                .roles("MANAGER");
+
+        //jdbc
+        String query1 = "select uid username, upw password, true enabled from tbl_members where uid = ?";
+        String query2 = "select member uid, role_name role from tbl_member_roles where member = ?";
+
+        auth.jdbcAuthentication()
+                .dataSource(dataSource)
+                .usersByUsernameQuery(query1)
+                .rolePrefix("ROLE_")
+                .authoritiesByUsernameQuery(query2)
+                .passwordEncoder(new BCryptPasswordEncoder());
+
     }
+
+
+    //jdbc 인증
+    @Autowired
+    DataSource dataSource;
+
+
+
+
 
 
 }
