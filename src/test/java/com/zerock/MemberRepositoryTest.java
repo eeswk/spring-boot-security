@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -51,6 +52,17 @@ public class MemberRepositoryTest {
     public void testRead() {
         Optional<Member> result = repo.findById("user85");
         result.ifPresent(member -> log.info("member" + member));
+    }
+    
+    @Test
+    public void testEncoderPw() {
+    	BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    	repo.findById("user88").ifPresent(member -> {
+    		
+    		member.setUpw(encoder.encode(member.getUpw()));
+    		
+    		repo.save(member);
+    	});
     }
 
 }
