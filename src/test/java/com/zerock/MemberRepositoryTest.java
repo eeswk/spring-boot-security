@@ -9,11 +9,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @RunWith(SpringRunner.class)
@@ -24,6 +27,9 @@ public class MemberRepositoryTest {
 
     @Autowired
     private MemberRepository repo;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Test
     public void testInsert() {
@@ -57,12 +63,28 @@ public class MemberRepositoryTest {
     @Test
     public void testEncoderPw() {
     	BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-    	repo.findById("user88").ifPresent(member -> {
+    	repo.findById("user99").ifPresent(member -> {
     		
     		member.setUpw(encoder.encode(member.getUpw()));
     		
     		repo.save(member);
     	});
+    }
+
+    @Test
+    public void testUpdateOldMember() {
+        List<String> ids = new ArrayList<>();
+
+        for (int i=0; i<=100; i++) {
+            ids.add("user"+i);
+        }
+
+        repo.findAllById(ids).forEach(member -> {
+            if(member.getUpw().length() < 10) {
+                member.setUpw(passwordEncoder.encode(member.getUpw()));
+                repo.save(member);
+            }
+        });
     }
 
 }

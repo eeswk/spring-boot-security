@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import lombok.extern.java.Log;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -16,6 +17,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
+@Log
 public class ZerockSecurityUser extends User{
 	
 	private static final String ROLE_PREFIX = "ROLE_";
@@ -23,7 +25,11 @@ public class ZerockSecurityUser extends User{
 	private Member member;
 	
 	public ZerockSecurityUser(Member member) {
-		super(member.getUid(), "{bcrypt}"+member.getUpw(), makeGrantedAthority(member.getRoles()));
+		super(member.getUid(), member.getUpw(), makeGrantedAthority(member.getRoles()));
+		log.info("uid: " + member.getUid());
+		//log.info("upw: " + "{bcrypt}"+member.getUpw());
+		log.info("upw: " + member.getUpw());
+		log.info("role: " + makeGrantedAthority(member.getRoles()));
 		this.member = member;
 	}
 

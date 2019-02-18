@@ -1,10 +1,62 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
     <title>Thymeleaf 3</title>
 </head>
 <body>
     <h1>Manager Page</h1>
+    <hr/>
+    <h3 sec:authentication="name">Spring security username</h3>
+    <h3>[[${#authentication.name}]]</h3>
+    <hr/>
+    <p sec:authorize-url="/admin/aaa">
+        <a href="/admin/aaa">ADMIN AAA</a>
+    </p>
+    <p sec:authorize-url="/manager/aaa">
+        <a href="/manager/aaa">MANAGER AAA</a>
+    </p>
+    <div sec:authorize="isAuthenticated()">
+        This content is only shown to authenticated users.
+    </div>
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
+        This content is only shown to administrators.
+    </div>
+    <div sec:authorize="hasRole('ROLE_MANAGER')">
+        This content is only shown to manager.
+    </div>
+
+    <strong> Username: <span sec:authentication="name"></span> </strong>
+</body>
+    <span sec:authorize="isAuthenticated()">
+                | Logged user: <span sec:authentication="name">Not found</span>
+                | Roles: <span sec:authentication="principal.authorities">Not found</span>
+                <a th:href="@{/logout}">Sign Out</a>
+    </span>
+<div>[[${#authentication.principal}]]</div>
+<hr/>
+<div>[[${#authentication.principal.member}]]</div>
+<hr/>
+<div>[[${#authentication.principal.member.uname}]]</div>
+<hr/>
+<div th:with="member=${#authentication.principal.member}">
+    <p>[[${member.uid}]]</p>
+    <p>[[${member.upw}]]</p>
+    <p>[[${member.uname}]]</p>
+</div>
+<!-- sample -->
+<div th:fragment="logout" class="logout" sec:authorize="isAuthenticated()">
+    Logged in user: <span sec:authentication="name"></span> |
+    <h3>[[${#authentication.name}]]</h3>
+    Roles: <span sec:authentication="principal.authorities"></span>
+    principal: <span sec:authentication="principal.username"></span>
+    <div>
+        <form action="#" th:action="@{/logout}" method="post">
+            <input type="submit" value="Logout" />
+        </form>
+    </div>
+</div>
+<div th:text="${#authorization}"></div>
 </body>
 </html>
